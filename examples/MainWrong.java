@@ -3,17 +3,21 @@ import ljc.Monomorph;
 public class MainWrong {
 
     public static void main(String[] args) {
-        //@Monomorph Cat c = "wrong type";
-        @Monomorph Cat c = new Cat();
-        // Cat c = new Cat();
+        @Monomorph Cat c = new @Monomorph Cat();
         c.speak();
-        c = new Kitten();
+        c = new @Monomorph Kitten();
         c.speak();
     }
 
 /*
+        @Monomorph Cat other = newCat();
+        other.speak();
+        other = newKitten();
+        other.speak();
+    }
+
     static @Monomorph Cat newCat() {
-        return new Cat();
+        return new @Monomorph Cat();
     }
 
     static Cat newKitten() {

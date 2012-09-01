@@ -28,27 +28,17 @@ public class MonomorphicChecker extends BaseTypeChecker {
 
     @Override
     public boolean isSubtype(AnnotatedTypeMirror subtype, AnnotatedTypeMirror supertype) {
-        return super.isSubtype(subtype, supertype) && checkTypeEquivalence(subtype, supertype);
-    }
-
-    private boolean checkTypeEquivalence(AnnotatedTypeMirror subtype, AnnotatedTypeMirror supertype) {
-        /*System.out.println(" subtyping " );
-        System.out.println(subtype);
-        System.out.println(subtype.getClass());
-        System.out.println(supertype);
-        System.out.println(supertype.getClass());
-        */
-        if (subtype.getEffectiveAnnotations().contains(MONOMORPH)) {
-            return subtype.getCopy(false).equals(supertype.getCopy(false));
+        if (subtype.getEffectiveAnnotations().contains(MONOMORPH) || supertype.getEffectiveAnnotations().contains(MONOMORPH)) {
+            return true;
         }
-
-        return true;
+        return super.isSubtype(subtype, supertype);
     }
 
-    /*@Override
+    @Override
     protected SourceVisitor<?, ?> createSourceVisitor(CompilationUnitTree root) {
         return new MonomorphicVisitor(this, root);
-    }*/
+    }
+
 
     /*
      * TODO: actually use the MultiGraphQH and incorporate rawness.
