@@ -10,61 +10,35 @@ import checkers.quals.PolyAll;
 import checkers.source.*;
 import checkers.types.*;
 import checkers.util.AnnotationUtils;
+import com.sun.source.tree.CompilationUnitTree;
 
 @TypeQualifiers({ Monomorph.class })
 // @SupportedLintOptions({"nulltest", "uninitialized", "advancedchecks"})
 public class MonomorphicChecker extends BaseTypeChecker {
 
 
-    // TODO: This lint option should only be temporary, until all checks are implemented correctly.
-    public static final boolean ADVANCEDCHECKS_DEFAULT = false;
-
-    //protected AnnotationMirror NONNULL, NULLABLE, PRIMITIVE;
+    private AnnotationMirror MONOMORPH;
 
     @Override
     public void initChecker(ProcessingEnvironment processingEnv) {
         super.initChecker(processingEnv);
-        System.out.println("initializing checker");
-        //AnnotationUtils annoFactory = AnnotationUtils.getInstance(env);
-        //NULLABLE = annoFactory.fromClass(Nullable.class);
+        AnnotationUtils annoFactory = AnnotationUtils.getInstance(env);
+        MONOMORPH = annoFactory.fromClass(Monomorph.class);
     }
 
-
-/*
-    class NullnessTypeHierarchy extends TypeHierarchy {
-
-        public NullnessTypeHierarchy(BaseTypeChecker checker,
-                QualifierHierarchy qualifierHierarchy) {
-            super(checker, qualifierHierarchy);
-        }
-
-        @Override
-        protected boolean isSubtypeAsTypeArgument(AnnotatedTypeMirror sub, AnnotatedTypeMirror sup) {
-            // @Primitive and @NonNull are interchangeable
-            if (sub.getEffectiveAnnotations().contains(PRIMITIVE) &&
-                    sup.getEffectiveAnnotations().contains(NONNULL)) {
-                return true;
-            }
-            return super.isSubtypeAsTypeArgument(sub, sup);
-        }
-
-    }
-*/
-    /*
-     * TODO: it's ugly that this method cannot be in the TypeHierarchy, as these methods
-     * are final there. Try to refactor this.
-     */
-//    @Override
-//    public boolean isSubtype(AnnotatedTypeMirror sub, AnnotatedTypeMirror sup) {
-        // @Primitive and @NonNull are interchangeable
-        /*
-         * if (sub.getEffectiveAnnotations().contains(PRIMITIVE) &&
-                sup.getEffectiveAnnotations().contains(NONNULL)) {
+    @Override
+    public boolean isSubtype(AnnotatedTypeMirror subtype, AnnotatedTypeMirror supertype) {
+        if (subtype.getEffectiveAnnotations().contains(MONOMORPH) || supertype.getEffectiveAnnotations().contains(MONOMORPH)) {
             return true;
         }
-        */
-        //return super.isSubtype(sub, sup);
-    //}
+        return super.isSubtype(subtype, supertype);
+    }
+
+    @Override
+    protected SourceVisitor<?, ?> createSourceVisitor(CompilationUnitTree root) {
+        return new MonomorphicVisitor(this, root);
+    }
+
 
     /*
      * TODO: actually use the MultiGraphQH and incorporate rawness.
